@@ -23,9 +23,15 @@ module Tenkit
       get("/availability/#{lat}/#{lon}?country=#{country}")
     end
 
-    def weather(lat, lon, data_sets: [:current_weather], language: 'en')
+    def weather(lat, lon, data_sets: [:current_weather], language: 'en', options: {})
       path_root = "/weather/#{language}/#{lat}/#{lon}?dataSets="
       path = path_root + data_sets.map { |ds| DATA_SETS[ds] }.compact.join(',')
+      if options.keys.any?
+        options.each do |key, value|
+          path = path + "&#{key}=#{value}"
+        end
+      end
+      puts "Tenkit requesting #{path}"
       response = get(path)
       WeatherResponse.new(response)
     end
